@@ -1,6 +1,9 @@
 import turtle
 import random
 from rand import rand
+from minmax import get_best_move
+# from minmax1 import best
+# from assignment2_group_41 import makeAMove
 import time
 
 
@@ -9,7 +12,8 @@ TILE = 20
 BOARD_COLOR = 'green'
 LINE_COLOR = 'white'
 TILE_COLORS = ['black', 'white']
-select_move = rand
+select_move1 = rand
+select_move2 = get_best_move
 
 
 class Board:
@@ -25,6 +29,7 @@ class Board:
         self.move = ()
 
     def draw_board(self):
+        return
 
         turtle.setup(self.n * self.square_size + self.square_size,
                      self.n * self.square_size + self.square_size)
@@ -58,7 +63,7 @@ class Board:
             self.draw_lines(othello)
 
     def draw_lines(self, turt):
-
+        return
         turt.pendown()
         turt.forward(self.square_size * self.n)
         turt.penup()
@@ -115,7 +120,7 @@ class Board:
         return ((x, y), r)
 
     def draw_tile(self, square, color):
-
+        return
         pos = self.get_tile_start_pos(square)
         if pos:
             coord = pos[0]
@@ -222,8 +227,9 @@ MOVE_DIRS = [(-1, -1), (-1, 0), (-1, +1),
 class Othello(Board):
 
     def __init__(self, n=8):
-        turtle.title("OTHELLO")
+        # turtle.title("OTHELLO")
         Board.__init__(self, n)
+        self.n = n
         self.current_player = 1
         self.num_tiles = [2, 2]
 
@@ -255,7 +261,6 @@ class Othello(Board):
             self.num_tiles[self.current_player] += 1
             color =  0 if self.current_player == 1 else 1
             self.draw_tile(self.move, color)
-            time.sleep(1.5)
             self.flip_tiles()
 
     def flip_tiles(self):
@@ -351,14 +356,14 @@ class Othello(Board):
             if self.current_player == 1:
                 if self.has_legal_move():
                     print('Player 1\'s turn.')
-                    self.move = select_move(self.board, 1)
+                    self.move = get_best_move(self.board, 1)
                     self.make_move()
                 else:
                     print('Player 1 has no legal move.')
             else:
                 if self.has_legal_move():
                     print('Player 2\'s turn.')
-                    self.move = select_move(self.board, -1)
+                    self.move = rand(self.board, -1)
                     self.make_move()
                 else:
                     print('Player 2 has no legal move.')
@@ -377,22 +382,23 @@ class Othello(Board):
         if self.has_legal_move():
             self.get_coord(x, y)
             if self.is_legal_move(self.move):
-                self.make_random_move()
+                self.make_move()
             else:
                 return
 
         while True:
-            self.current_player = 1
+            self.current_player = -1
             if self.has_legal_move():
                 print('Computer\'s turn.')
-                self.make_random_move()
-                self.current_player = 0
+                self.move = rand(self.board, -1)
+                self.make_move()
+                self.current_player = 1
                 if self.has_legal_move():
                     break
             else:
                 break
 
-        self.current_player = 0
+        self.current_player = 1
 
         if not self.has_legal_move() or sum(self.num_tiles) == self.n ** 2:
             turtle.onscreenclick(None)
@@ -422,7 +428,8 @@ class Othello(Board):
             self.make_move()
 
     def report_result(self):
-
+        print(count_elements(self.board))
+        return
         print('GAME OVER!!')
         if self.num_tiles[1] > self.num_tiles[-1]:
             print('YOU WIN!!',
@@ -453,22 +460,33 @@ class Othello(Board):
 
 
 def main():
-    method_choice = int(
-        input("Nhap method (Tu choi: 0, Choi tay: 1): "))
-    algorithm = int(
-        input("Nhap method (Rand: 0): "))
+    # method_choice = int(
+    #     input("Nhap method (Tu choi: 0, Choi tay: 1): "))
+    # algorithm = int(
+    #     input("Nhap method (Rand: 0): "))
 
     game = Othello()
     game.draw_board()
     game.initialize_board()
-    if method_choice == 0:
-        if algorithm == 0:
-            select_move = rand
-            game.run1()
-        game.run1()
-    elif method_choice == 1:
-        game.run()
-    
+    # if method_choice == 0:
+    #     if algorithm == 0:
+    #         select_move = rand
+    #         game.run1()
+    #     game.run1()
+    # elif method_choice == 1:
+    #     game.run()
+    game.run1()
+def count_elements(lst):
+    count_1 = 0
+    count_minus_1 = 0
 
+    for row in lst:
+        for num in row:
+            if num == 1:
+                count_1 += 1
+            elif num == -1:
+                count_minus_1 += 1
+
+    return count_1, count_minus_1
 
 main()
