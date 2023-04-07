@@ -31,7 +31,6 @@ def rand(cur_state, player_to_move, remain_time=1):
         return [(row, col) for row in range(8) for col in range(8) if is_legal_move(cur_state, (row, col), player_to_move)]
 
     moves = get_legal_moves(cur_state, player_to_move)
-    print(cur_state)
     if moves:
         return random.choice(moves)
     else:

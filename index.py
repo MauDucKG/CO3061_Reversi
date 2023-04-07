@@ -12,9 +12,6 @@ TILE = 20
 BOARD_COLOR = 'green'
 LINE_COLOR = 'white'
 TILE_COLORS = ['black', 'white']
-select_move1 = rand
-select_move2 = get_best_move
-
 
 class Board:
     def __init__(self, n):
@@ -357,6 +354,7 @@ class Othello(Board):
                 if self.has_legal_move():
                     print('Player 1\'s turn.')
                     self.move = get_best_move(self.board, 1)
+                    print(self.move)
                     self.make_move()
                 else:
                     print('Player 1 has no legal move.')
@@ -364,6 +362,7 @@ class Othello(Board):
                 if self.has_legal_move():
                     print('Player 2\'s turn.')
                     self.move = rand(self.board, -1)
+                    print(self.move)
                     self.make_move()
                 else:
                     print('Player 2 has no legal move.')
@@ -376,6 +375,7 @@ class Othello(Board):
         # score.update_scores(name1, self.num_tiles[0])
         # score.update_scores(name2, self.num_tiles[1])
         print('Thanks for playing Othello!')
+        print(self.board)
 
     def play(self, x, y):
 

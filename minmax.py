@@ -2,8 +2,8 @@ import random
 
 def minimax(cur_state, player_to_move, depth, alpha, beta):
     MOVE_DIRS = [(-1, -1), (-1, 0), (-1, +1),
-                 (0, -1),           (0, +1),
-                 (+1, -1), (+1, 0), (+1, +1)]
+    (0, -1), (0, +1),
+    (+1, -1), (+1, 0), (+1, +1)]
 
     def has_tile_to_flip(board, move, direction, player_to_move):
         i = 1
@@ -19,6 +19,7 @@ def minimax(cur_state, player_to_move, depth, alpha, beta):
                 else:
                     i += 1
             return i > 1
+
     def make_move(board, move, player_to_move):
         new_board = [row.copy() for row in board]
         new_board[move[0]][move[1]] = player_to_move
@@ -31,6 +32,7 @@ def minimax(cur_state, player_to_move, depth, alpha, beta):
                     row += direction[0]
                     col += direction[1]
         return new_board
+
     def is_valid_coord(row, col):
         return 0 <= row < 8 and 0 <= col < 8
 
@@ -69,7 +71,6 @@ def minimax(cur_state, player_to_move, depth, alpha, beta):
             if beta <= alpha:
                 break
         return best_move, min_value
-
 def evaluate(board, player_to_move):
     score = 0
     for i, row in enumerate(board):
@@ -77,15 +78,19 @@ def evaluate(board, player_to_move):
             if tile == player_to_move:
                 score += 1
                 if i in [0, 7] or j in [0, 7]:
-                    score += 1  # Cộng thêm 1 điểm cho ô nằm ở biên có quân cờ của người chơi
+                    score += 2
+                if i in [0, 7] and j in [0, 7]:
+                    score += 5
+                    
             elif tile == -player_to_move:
                 score -= 1
                 if i in [0, 7] or j in [0, 7]:
-                    score -= 1  # Trừ đi 1 điểm cho ô nằm ở biên có quân cờ của đối thủ
+                    score -= 2
+                if i in [0, 7] and j in [0, 7]:
+                    score -= 5
     return score
-
-def get_best_move(cur_state, player_to_move, depth=5):
+def get_best_move(cur_state, player_to_move, remain_time=1, depth=5):
     if player_to_move == 1:
-        depth = 6
+        depth = 4
     move, _ = minimax(cur_state, player_to_move, depth, float('-inf'), float('inf'))
     return move
