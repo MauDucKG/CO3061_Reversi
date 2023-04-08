@@ -2,8 +2,6 @@ import turtle
 import random
 from rand import rand
 from minmax import get_best_move
-# from minmax1 import best
-# from assignment2_group_41 import makeAMove
 import time
 
 
