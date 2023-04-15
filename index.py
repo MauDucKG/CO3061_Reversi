@@ -1,7 +1,7 @@
 import turtle
 import random
 from rand import rand
-from minmax import get_best_move
+from _2010878_2010230_2036076_2011286 import select_move
 import time
 
 
@@ -347,11 +347,21 @@ class Othello(Board):
             return
 
         self.current_player = 1
+        total_time = 60
         for i in range(num_moves):
             if self.current_player == 1:
                 if self.has_legal_move():
                     print('Player 1\'s turn.')
-                    self.move = get_best_move(self.board, 1)
+                    start_time = time.perf_counter()
+                    self.move = select_move(self.board, 1, total_time)
+                    end_time = time.perf_counter()
+                    time_amount = end_time - start_time
+                    if time_amount > 3:
+                        raise Exception("time limit is 3s")
+                    if total_time - time_amount <= 0:
+                        raise Exception("total time limit is 60s")
+                    else: total_time -= time_amount
+
                     print(self.move)
                     self.make_move()
                 else:
@@ -367,7 +377,7 @@ class Othello(Board):
             self.current_player = self.current_player*-1
 
         print('-----------')
-        self.report_result()
+        print(count_elements(self.board))
         # name1 = input('Enter name for player 1\n')
         # name2 = input('Enter name for player 2\n')
         # score.update_scores(name1, self.num_tiles[0])
@@ -403,7 +413,7 @@ class Othello(Board):
             print('-----------')
             self.report_result()
             name = input('Enter your name for posterity\n')
-            if not score.update_scores(name, self.num_tiles[1]):
+            if not update_scores(name, self.num_tiles[1]):
                 print('Your score has not been saved.')
             print('Thanks for playing Othello!')
             close = input('Close the game screen? Y/N\n')
@@ -474,6 +484,7 @@ def main():
     # elif method_choice == 1:
     #     game.run()
     game.run1()
+
 def count_elements(lst):
     count_1 = 0
     count_minus_1 = 0
