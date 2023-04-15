@@ -356,6 +356,7 @@ class Othello(Board):
                     self.move = select_move(self.board, 1, total_time)
                     end_time = time.perf_counter()
                     time_amount = end_time - start_time
+                    print("time: ", time_amount)
                     if time_amount > 3:
                         raise Exception("time limit is 3s")
                     if total_time - time_amount <= 0:
