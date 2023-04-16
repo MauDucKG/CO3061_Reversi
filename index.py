@@ -1,7 +1,7 @@
 import turtle
 import random
 from rand import rand
-from _2010878_2010230_2036076_2011286 import select_move
+from minimax import *
 import time
 
 
@@ -353,7 +353,7 @@ class Othello(Board):
                 if self.has_legal_move():
                     print('Player 1\'s turn.')
                     start_time = time.perf_counter()
-                    self.move = select_move(self.board, 1, total_time)
+                    self.move = select_move_simple(self.board, 1, total_time)
                     end_time = time.perf_counter()
                     time_amount = end_time - start_time
                     print("time: ", time_amount)
@@ -365,15 +365,36 @@ class Othello(Board):
 
                     print(self.move)
                     self.make_move()
-                else:
+                    for row in self.board:
+                        strow = ""
+                        for tale in row:
+                            if tale == -1:
+                                strow += "O  "
+                            elif tale == 1:
+                                strow += "@  "
+                            else:
+                                strow += "_  "
+                        print(strow)
+                else: 
                     print('Player 1 has no legal move.')
             else:
                 if self.has_legal_move():
                     print('Player 2\'s turn.')
                     self.move = rand(self.board, -1)
+                    #self.move = select_move(self.board, -1, 60)
                     print(self.move)
                     self.make_move()
-                else:
+                    for row in self.board:
+                        strow = ""
+                        for tale in row:
+                            if tale == -1:
+                                strow += "O  "
+                            elif tale == 1:
+                                strow += "@  "
+                            else:
+                                strow += "_  "
+                        print(strow)
+                else: 
                     print('Player 2 has no legal move.')
             self.current_player = self.current_player*-1
 
@@ -384,7 +405,7 @@ class Othello(Board):
         # score.update_scores(name1, self.num_tiles[0])
         # score.update_scores(name2, self.num_tiles[1])
         print('Thanks for playing Othello!')
-        print(self.board)
+        
 
     def play(self, x, y):
 
@@ -484,6 +505,9 @@ def main():
     #     game.run1()
     # elif method_choice == 1:
     #     game.run()
+    """for i in range(1, 9):
+        print("game ", i, " is playing...")
+        game.run1()"""
     game.run1()
 
 def count_elements(lst):

@@ -1,5 +1,3 @@
-
-import random as rd
 import time
 
 def select_move(cur_state, player_to_move, remain_time):
@@ -7,6 +5,15 @@ def select_move(cur_state, player_to_move, remain_time):
         MOVE_DIRS = [(-1, -1), (-1, 0), (-1, +1),
                     (0, -1),           (0, +1),
                     (+1, -1), (+1, 0), (+1, +1)]
+        
+        POINT_TABLE =  [[ 8, -4,  6,  6,  6,  6, -4,  8],
+                        [-4, -4, -3, -3, -3, -3, -4, -4],
+                        [ 6, -3,  1,  1,  1,  1, -3,  6],
+                        [ 6, -3,  1,  2,  2,  1, -3,  6],
+                        [ 6, -3,  1,  2,  2,  1, -3,  6],
+                        [ 6, -3,  1,  1,  1,  1, -3,  6],
+                        [-4, -4, -3, -3, -3, -3, -4, -4],
+                        [ 8, -4,  6,  6,  6,  6, -4,  8]]
 
         def has_tile_to_flip(board, move, direction, player_to_move):
             i = 1
@@ -46,34 +53,27 @@ def select_move(cur_state, player_to_move, remain_time):
             return [(row, col) for row in range(8) for col in range(8) if is_legal_move(cur_state, (row, col), player_to_move)]
 
         def evaluate(board, player_to_move):
-            #moves1 = get_legal_moves(board, player_to_move)
+            legal_moves = get_legal_moves(board, player_to_move)
             #moves2 = get_legal_moves(board, -player_to_move)
             #if not moves1 and not moves2:
 
-            point_table = [[ 8, -4,  6,  6,  6,  6, -4,  8],
-                           [-4, -4, -3, -3, -3, -3, -4, -4],
-                           [ 6, -3,  1,  1,  1,  1, -3,  6],
-                           [ 6, -3,  1,  2,  2,  1, -3,  6],
-                           [ 6, -3,  1,  2,  2,  1, -3,  6],
-                           [ 6, -3,  1,  1,  1,  1, -3,  6],
-                           [-4, -4, -3, -3, -3, -3, -4, -4],
-                           [ 8, -4,  6,  6,  6,  6, -4,  8]]
-
+            
             score = 0
+            total_tile = 0
             for i, row in enumerate(board):
                 for j, tile in enumerate(row):
-                    score += tile*point_table[i][j]
-            return score
+                    if tile != 0:
+                        total_tile += tile
+                        score += tile*POINT_TABLE[i][j]
+            return (2*score + len(legal_moves)*player_to_move)*10 + total_tile
             
             #print("point: ", (len(moves1) - len(moves2))*player_to_move + 1000)
             #return (len(moves1) - len(moves2))*player_to_move + 1000
 
-
-
         start_time = time.perf_counter()
         
         # minimax algorithm
-        if time_limit <= 0.001:
+        if time_limit <= 0.005:
             #print("time limit is: ", time_limit)
             time_amount = time.perf_counter() - start_time
             time_spare = 0 if time_amount > time_limit else time_limit - time_amount
@@ -136,6 +136,9 @@ def select_move(cur_state, player_to_move, remain_time):
             #print("time spare min node: ", time_spare)
             return best_move, min_value, time_spare
 
-    move, _, timespare = minimax(cur_state, player_to_move, 2.8, float('-inf'), float('inf'))
+    time_limit = 2.5
+    if remain_time < 3:
+        time_limit = 0.5  
+    move, _, timespare = minimax(cur_state, player_to_move, time_limit, float('-inf'), float('inf'))
     #print("TIME SPARE TOTAL: ", timespare)
     return move
