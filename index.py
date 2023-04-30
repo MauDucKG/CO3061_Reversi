@@ -218,6 +218,18 @@ MOVE_DIRS = [(-1, -1), (-1, 0), (-1, +1),
              (0, -1),           (0, +1),
              (+1, -1), (+1, 0), (+1, +1)]
 
+def select_move_by_mode(mode, cur_state, player_to_move, remain_time = 60):
+    if mode == 1: # random
+        return rand(cur_state, player_to_move)
+    elif mode == 2: # simple table
+        return select_move(cur_state, player_to_move, remain_time, evaluate_simple_table)
+    elif mode == 3: # good bad evaluate
+        return select_move(cur_state, player_to_move, remain_time, evaluate_goodbad)
+    elif mode == 4: # corner table
+        return select_move(cur_state, player_to_move, remain_time, evaluate_corner)
+    
+    raise Exception("wrong mode id")
+    
 
 class Othello(Board):
 
@@ -329,82 +341,84 @@ class Othello(Board):
             return True
         return False
 
-    def run(self):
+    def playingTurn(self, mode, cur_state, player_to_move, remain_time = 60):
+        if player_to_move == 1:
+            print("Player 1's turn:")
+        else:
+            print("Player 2's turn:")
 
+        time_amount = 0
+        if self.has_legal_move():
+            start_time = time.perf_counter()
+            self.move = select_move_by_mode(mode, cur_state, player_to_move, remain_time)
+            end_time = time.perf_counter()
+            time_amount = end_time - start_time
+            print("time: ", time_amount)
+            if time_amount > 3:
+                raise Exception("time limit is 3s")
+            if time_amount > remain_time:
+                raise Exception("total time limit is 60s")
+
+            print(self.move)
+            self.make_move()
+            print("table:")
+            print("    0  1  2  3  4  5  6  7")
+            for i, row in enumerate(self.board):
+                strow = str(i) + "   "
+                for j, tale in enumerate(row):
+                    if i == self.move[0] and j == self.move[1]:
+                        if tale == -1:
+                            strow += "O  "
+                        elif tale == 1:
+                            strow += "X  "
+                        else:
+                            strow += "_  "
+                    else:
+                        if tale == -1:
+                            strow += "o  "
+                        elif tale == 1:
+                            strow += "x  "
+                        else:
+                            strow += "_  "
+                print(strow)
+        else: 
+            print('no legal move.')
+        print("=============================")
+        return time_amount
+
+    def run1(self, mode1, mode2):
+        num_moves = 60
         if self.current_player not in (-1, 1):
             print('Error: unknown player. Quit...')
             return
+        print("Game started:")
+        print("    0  1  2  3  4  5  6  7")
+        for i, row in enumerate(self.board):
+            strow = str(i) + "   "
+            for j, tale in enumerate(row):
+                if tale == -1:
+                    strow += "o  "
+                elif tale == 1:
+                    strow += "x  "
+                else:
+                    strow += "_  "
+            print(strow)
+        print("=============================")
 
         self.current_player = 1
-        print('Your turn.')
-        turtle.onscreenclick(self.play)
-        turtle.mainloop()
-    
-    def run1(self):
-        num_moves = 64
-        if self.current_player not in (-1, 1):
-            print('Error: unknown player. Quit...')
-            return
-
-        self.current_player = 1
-        total_time = 60
+        time_left_0 = 60
+        time_left_1 = 60
         for i in range(num_moves):
             if self.current_player == 1:
-                if self.has_legal_move():
-                    print('Player 1\'s turn.')
-                    start_time = time.perf_counter()
-                    self.move = select_move_simple(self.board, 1, total_time)
-                    end_time = time.perf_counter()
-                    time_amount = end_time - start_time
-                    print("time: ", time_amount)
-                    if time_amount > 3:
-                        raise Exception("time limit is 3s")
-                    if total_time - time_amount <= 0:
-                        raise Exception("total time limit is 60s")
-                    else: total_time -= time_amount
-
-                    print(self.move)
-                    self.make_move()
-                    for row in self.board:
-                        strow = ""
-                        for tale in row:
-                            if tale == -1:
-                                strow += "O  "
-                            elif tale == 1:
-                                strow += "@  "
-                            else:
-                                strow += "_  "
-                        print(strow)
-                else: 
-                    print('Player 1 has no legal move.')
+                time_amount = self.playingTurn(mode1, self.board, 1, time_left_0)
+                time_left_0 -= time_amount
             else:
-                if self.has_legal_move():
-                    print('Player 2\'s turn.')
-                    self.move = rand(self.board, -1)
-                    #self.move = select_move(self.board, -1, 60)
-                    print(self.move)
-                    self.make_move()
-                    for row in self.board:
-                        strow = ""
-                        for tale in row:
-                            if tale == -1:
-                                strow += "O  "
-                            elif tale == 1:
-                                strow += "@  "
-                            else:
-                                strow += "_  "
-                        print(strow)
-                else: 
-                    print('Player 2 has no legal move.')
-            self.current_player = self.current_player*-1
+                time_amount = self.playingTurn(mode2, self.board, -1, time_left_1)
+                time_left_1 -= time_amount
+            self.current_player = -self.current_player
 
-        print('-----------')
-        print(count_elements(self.board))
-        # name1 = input('Enter name for player 1\n')
-        # name2 = input('Enter name for player 2\n')
-        # score.update_scores(name1, self.num_tiles[0])
-        # score.update_scores(name2, self.num_tiles[1])
-        print('Thanks for playing Othello!')
+        print("=============================")
+        print("Result: ", count_elements(self.board))
         
 
     def play(self, x, y):
@@ -496,19 +510,17 @@ def main():
     #     input("Nhap method (Rand: 0): "))
 
     game = Othello()
-    game.draw_board()
+    #game.draw_board()
     game.initialize_board()
-    # if method_choice == 0:
-    #     if algorithm == 0:
-    #         select_move = rand
-    #         game.run1()
-    #     game.run1()
-    # elif method_choice == 1:
-    #     game.run()
-    """for i in range(1, 9):
-        print("game ", i, " is playing...")
-        game.run1()"""
-    game.run1()
+    print("Mode list:")
+    print("1. Random algorithm")
+    print("2. Simple table algorithm")
+    print("3. Good and bad algorithm")
+    print("4. Corner algorithm")
+    print("---------------------")
+    mode1 = int(input("Enter mode id for player 1: "))
+    mode2 = int(input("Enter mode id for player 2: "))
+    game.run1(mode1, mode2)
 
 def count_elements(lst):
     count_1 = 0
