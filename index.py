@@ -347,7 +347,7 @@ class Othello(Board):
         else:
             print("Player 2's turn:")
 
-        time_amount = 0
+        time_amount = -1
         if self.has_legal_move():
             start_time = time.perf_counter()
             self.move = select_move_by_mode(mode, cur_state, player_to_move, remain_time)
@@ -387,7 +387,7 @@ class Othello(Board):
         return time_amount
 
     def run1(self, mode1, mode2):
-        num_moves = 60
+        num_moves = 120
         if self.current_player not in (-1, 1):
             print('Error: unknown player. Quit...')
             return
@@ -408,13 +408,28 @@ class Othello(Board):
         self.current_player = 1
         time_left_0 = 60
         time_left_1 = 60
+        no_move = False
         for i in range(num_moves):
             if self.current_player == 1:
                 time_amount = self.playingTurn(mode1, self.board, 1, time_left_0)
-                time_left_0 -= time_amount
+                if time_amount < 0:
+                    if no_move:
+                        break
+                    else:
+                        no_move = True
+                else:
+                    no_move = False
+                    time_left_0 -= time_amount
             else:
                 time_amount = self.playingTurn(mode2, self.board, -1, time_left_1)
-                time_left_1 -= time_amount
+                if time_amount < 0:
+                    if no_move:
+                        break
+                    else:
+                        no_move = True
+                else:
+                    no_move = False
+                    time_left_1 -= time_amount
             self.current_player = -self.current_player
 
         print("=============================")

@@ -58,8 +58,7 @@ def evaluate_final(board):
 
 def evaluate_simple_table(board, player_to_move):
     legal_moves = get_legal_moves(board, player_to_move)
-    #moves2 = get_legal_moves(board, -player_to_move)
-    #if not moves1 and not moves2:
+    
     POINT_TABLE =  [[ 8, -4,  6,  6,  6,  6, -4,  8],
                     [-4, -4, -3, -3, -3, -3, -4, -4],
                     [ 6, -3,  1,  1,  1,  1, -3,  6],
@@ -77,8 +76,18 @@ def evaluate_simple_table(board, player_to_move):
                 total_tile += tile
                 score += tile*POINT_TABLE[i][j]
     return (2*score + len(legal_moves)*player_to_move)*10 + total_tile
+    #return 2*score*10 + total_tile
 
 def evaluate_goodbad(board, player_to_move):
+    POINT_TABLE =  [[ 8, -4,  6,  6,  6,  6, -4,  8],
+                    [-4, -4, -3, -3, -3, -3, -4, -4],
+                    [ 6, -3,  1,  1,  1,  1, -3,  6],
+                    [ 6, -3,  1,  2,  2,  1, -3,  6],
+                    [ 6, -3,  1,  2,  2,  1, -3,  6],
+                    [ 6, -3,  1,  1,  1,  1, -3,  6],
+                    [-4, -4, -3, -3, -3, -3, -4, -4],
+                    [ 8, -4,  6,  6,  6,  6, -4,  8]]
+    
     def evaluate_good(pos, board):
         tale = board[pos[0]][pos[1]]
         max_point = 0
@@ -123,14 +132,6 @@ def evaluate_goodbad(board, player_to_move):
     legal_moves = get_legal_moves(board, player_to_move)
     #moves2 = get_legal_moves(board, -player_to_move)
     #if not moves1 and not moves2:
-    POINT_TABLE =  [[ 8, -4,  6,  6,  6,  6, -4,  8],
-                    [-4, -4, -3, -3, -3, -3, -4, -4],
-                    [ 6, -3,  1,  1,  1,  1, -3,  6],
-                    [ 6, -3,  1,  2,  2,  1, -3,  6],
-                    [ 6, -3,  1,  2,  2,  1, -3,  6],
-                    [ 6, -3,  1,  1,  1,  1, -3,  6],
-                    [-4, -4, -3, -3, -3, -3, -4, -4],
-                    [ 8, -4,  6,  6,  6,  6, -4,  8]]
     
     score = 0
     total_tile = 0
@@ -145,7 +146,7 @@ def evaluate_goodbad(board, player_to_move):
     #return (len(moves1) - len(moves2))*player_to_move + 1000
 
 def evaluate_corner(board, player_to_move = 0):
-    POINT_TABLE_0 = [[ 100, -100, 2, 2, 2, 2, -100,  100],
+    """POINT_TABLE_0 = [[ 100, -100, 2, 2, 2, 2, -100,  100],
                      [-100, -100, 1, 1, 1, 1, -100, -100],
                      [   2,    1, 1, 1, 1, 1,    1,    2],
                      [   2,    1, 1, 2, 2, 1,    1,    2],
@@ -161,10 +162,29 @@ def evaluate_corner(board, player_to_move = 0):
                      [   2,    1, 1, 2, 2, 1,    1,    2],
                      [   2,    1, 1, 1, 1, 1,    1,    2],
                      [-100, -100, 1, 1, 1, 1, -100, -100],
-                     [ 100, -100, 2, 2, 2, 2, -100,  100]]
+                     [ 100, -100, 2, 2, 2, 2, -100,  100]]"""
+    
+    POINT_TABLE_0 = [[ 100, -100,  1,  1,  1,  1, -100,  100],
+                     [-100, -100, -1, -1, -1, -1, -100, -100],
+                     [   1,   -1,  1, -1, -1,  1,   -1,    1],
+                     [   1,   -1, -1,  1,  1, -1,   -1,    1],
+                     [   1,   -1, -1,  1,  1, -1,   -1,    1],
+                     [   1,   -1,  1, -1, -1,  1,   -1,    1],
+                     [-100, -100, -1, -1, -1, -1, -100, -100],
+                     [ 100, -100,  1,  1,  1,  1, -100,  100]]
+    
+    POINT_TABLE_1 = [[ 100, -100,  1,  1,  1,  1, -100,  100],
+                     [-100, -100, -1, -1, -1, -1, -100, -100],
+                     [   1,   -1,  1, -1, -1,  1,   -1,    1],
+                     [   1,   -1, -1,  1,  1, -1,   -1,    1],
+                     [   1,   -1, -1,  1,  1, -1,   -1,    1],
+                     [   1,   -1,  1, -1, -1,  1,   -1,    1],
+                     [-100, -100, -1, -1, -1, -1, -100, -100],
+                     [ 100, -100,  1,  1,  1,  1, -100,  100]]
 
     score = 0
     total_tile = 0
+    num_tile = 0
 
     if board[0][0] != 0:
         if board[0][0] == -1:
@@ -248,11 +268,14 @@ def evaluate_corner(board, player_to_move = 0):
 
     for i, row in enumerate(board):
         for j, tile in enumerate(row):
+            total_tile += tile
             if tile == -1:
+                num_tile += 1
                 score += tile*POINT_TABLE_0[i][j]
             elif tile == 1:
+                num_tile += 1
                 score += tile*POINT_TABLE_1[i][j]
-    return score
+    return score + total_tile/(65 - num_tile)
 
 def minimax(cur_state, player_to_move, time_limit, alpha, beta, eval_func, no_legal = False):
     
