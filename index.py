@@ -3,6 +3,7 @@ import random
 from rand import rand
 from minimax import *
 import time
+from otherteam import huyshadow, ngocvinh, dpquoc, namnguyen, nhatanh, duyvo, hpt2
 
 
 SQUARE = 50
@@ -227,6 +228,21 @@ def select_move_by_mode(mode, cur_state, player_to_move, remain_time = 60):
         return select_move(cur_state, player_to_move, remain_time, evaluate_goodbad)
     elif mode == 4: # corner table
         return select_move(cur_state, player_to_move, remain_time, evaluate_corner)
+    # other team
+    elif mode == 5: 
+        return huyshadow.select_move(cur_state, player_to_move, remain_time)
+    elif mode == 6:
+        return ngocvinh.select_move(cur_state, player_to_move, remain_time)
+    elif mode == 7:
+        return dpquoc.select_move(cur_state, player_to_move, remain_time)
+    elif mode == 8:
+        return namnguyen.select_move(cur_state, player_to_move, remain_time)
+    elif mode == 9:
+        return nhatanh.select_move(cur_state, player_to_move, remain_time)
+    elif mode == 10:
+        return duyvo.select_move(cur_state, player_to_move, remain_time)
+    elif mode == 11:
+        return hpt2.select_move(cur_state, player_to_move, remain_time)
     
     raise Exception("wrong mode id")
     
@@ -328,7 +344,7 @@ class Othello(Board):
 
     def is_legal_move(self, move):
 
-        if move != () and self.is_valid_coord(move[0], move[1]) \
+        if move and self.is_valid_coord(move[0], move[1]) \
            and self.board[move[0]][move[1]] == 0:
             for direction in MOVE_DIRS:
                 if self.has_tile_to_flip(move, direction):
@@ -354,7 +370,7 @@ class Othello(Board):
             end_time = time.perf_counter()
             time_amount = end_time - start_time
             print("time: ", time_amount)
-            if time_amount > 3:
+            if time_amount > 30:
                 raise Exception("time limit is 3s")
             if time_amount > remain_time:
                 raise Exception("total time limit is 60s")
@@ -531,7 +547,14 @@ def main():
     print("1. Random algorithm")
     print("2. Simple table algorithm")
     print("3. Good and bad algorithm")
-    print("4. Corner algorithm")
+    print("4. Corner algorithm (main)")
+    print("5. Huy Shadow algorithm")
+    print("6. Ngoc Vinh algorithm")
+    print("7. Dang Phu Quoc algorithm")
+    print("8. Nam Nguyen algorithm")
+    print("9. Nhat Anh algorithm")
+    print("10. Duy Vo algorithm")
+    print("11. HPT2 algorithm")
     print("---------------------")
     mode1 = int(input("Enter mode id for player 1: "))
     mode2 = int(input("Enter mode id for player 2: "))
