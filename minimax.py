@@ -275,7 +275,7 @@ def evaluate_corner(board, player_to_move = 0):
             elif tile == 1:
                 num_tile += 1
                 score += tile*POINT_TABLE_1[i][j]
-    return score + total_tile/(65 - num_tile)
+    return score + 3*total_tile/(65 - num_tile)
 
 def minimax(cur_state, player_to_move, time_limit, alpha, beta, eval_func, no_legal = False):
     
