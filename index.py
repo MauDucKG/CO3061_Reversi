@@ -4,7 +4,7 @@ from rand import rand
 from minimax import *
 import time
 from otherteam import huyshadow, ngocvinh, dpquoc, namnguyen, nhatanh, duyvo, hpt2
-
+import _2010878_2010230_2036076_2011286
 
 SQUARE = 50
 TILE = 20
@@ -220,7 +220,9 @@ MOVE_DIRS = [(-1, -1), (-1, 0), (-1, +1),
              (+1, -1), (+1, 0), (+1, +1)]
 
 def select_move_by_mode(mode, cur_state, player_to_move, remain_time = 60):
-    if mode == 1: # random
+    if mode == 0:
+        return _2010878_2010230_2036076_2011286.select_move(cur_state, player_to_move, remain_time)
+    elif mode == 1: # random
         return rand(cur_state, player_to_move)
     elif mode == 2: # simple table
         return select_move(cur_state, player_to_move, remain_time, evaluate_simple_table)
@@ -370,7 +372,7 @@ class Othello(Board):
             end_time = time.perf_counter()
             time_amount = end_time - start_time
             print("time: ", time_amount)
-            if time_amount > 30:
+            if time_amount > 3:
                 raise Exception("time limit is 3s")
             if time_amount > remain_time:
                 raise Exception("total time limit is 60s")
@@ -544,6 +546,7 @@ def main():
     #game.draw_board()
     game.initialize_board()
     print("Mode list:")
+    print("0. Main algorithm")
     print("1. Random algorithm")
     print("2. Simple table algorithm")
     print("3. Good and bad algorithm")
